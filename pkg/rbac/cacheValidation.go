@@ -159,11 +159,13 @@ func (c *Cache) namespaceDeleted(obj *unstructured.Unstructured) {
 	// Delete from Namespaces shared cache.
 	ns := obj.GetName()
 	newNamespaces := make([]string, 0)
+	c.shared.nsCache.lock.RLock()
 	for _, n := range c.shared.namespaces {
 		if n != ns {
 			newNamespaces = append(newNamespaces, n)
 		}
 	}
+	c.shared.nsCache.lock.RUnlock()
 	c.shared.nsCache.lock.Lock()
 	c.shared.namespaces = newNamespaces
 	c.shared.nsCache.updatedAt = time.Now()
